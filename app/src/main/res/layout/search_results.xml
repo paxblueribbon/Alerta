@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/topLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/lowerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/movieTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/posterImage"
+            android:layout_marginBottom="22dp"
+            android:layout_toEndOf="@+id/posterImage"
+            android:layout_toRightOf="@+id/posterImage"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            tools:text="Blade Runner"/>
+
+        <TextView
+            android:id="@+id/yearTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/movieTitle"
+            android:layout_marginBottom="11dp"
+            android:layout_toEndOf="@+id/posterImage"
+            android:layout_toRightOf="@+id/posterImage"
+            android:textColor="@android:color/black"
+            tools:text="1982"/>
+
+        <ImageView
+            android:id="@+id/posterImage"
+            android:layout_width="80dp"
+            android:layout_height="100dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/br_poster"
+            tools:srcCompat="@drawable/MV5BNzQzMzJhZTEtOWM4NS00MTdhLTg0YjgtMjM4MDRkZjUwZDBlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@"/>
+    </RelativeLayout>
+
+</RelativeLayout>

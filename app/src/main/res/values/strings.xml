@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CWnet</string>
+    <string name="Greetings_message">Greetings %1$s</string>
+</resources>
