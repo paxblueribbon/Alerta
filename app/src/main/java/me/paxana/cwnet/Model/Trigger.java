@@ -16,8 +16,7 @@ public class Trigger {
         mTriggerVotesTotal = triggerVotesTotal;
     }
 
-    public Trigger(){
-
+    public Trigger() {
     }
 
     public String getTriggerName() {

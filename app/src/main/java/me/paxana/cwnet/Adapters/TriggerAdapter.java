@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -97,44 +98,45 @@ public class TriggerAdapter extends BaseAdapter {
         holder.upButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //movieDB.child(mImdbID).setValue(trigger.getTriggerName());
+
                 triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName()).child("triggerVotesYes");
-                triggerDB.runTransaction(new Transaction.Handler() {
-                    @Override
-                    public Transaction.Result doTransaction(MutableData mutableData) {
-                        int count = mutableData.getValue(Integer.class);
-                        mutableData.setValue(count + 1);
 
-                        return Transaction.success(mutableData);
-                    }
+                    triggerDB.runTransaction(new Transaction.Handler() {
+                        @Override
+                        public Transaction.Result doTransaction(MutableData mutableData) {
+                            int count = mutableData.getValue(Integer.class);
+                            mutableData.setValue(count + 1);
 
-                    @Override
-                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                            return Transaction.success(mutableData);
+                        }
 
-                    }
-                });
+                        @Override
+                        public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
+                        }
+                    });
             }
         });
+
         holder.downButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName()).child("triggerVotesYes");
-                 triggerDB.runTransaction(new Transaction.Handler() {
-                     @Override
-                     public Transaction.Result doTransaction(MutableData mutableData) {
-                         int count = mutableData.getValue(Integer.class);
-                         mutableData.setValue(count - 1);
 
-                         return Transaction.success(mutableData);
-                     }
+                    triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName()).child("triggerVotesYes");
+                    triggerDB.runTransaction(new Transaction.Handler() {
+                        @Override
+                        public Transaction.Result doTransaction(MutableData mutableData) {
+                            int count = mutableData.getValue(Integer.class);
+                            mutableData.setValue(count - 1);
 
-                     @Override
-                     public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                            return Transaction.success(mutableData);
+                        }
 
-                     }
-                 });
+                        @Override
+                        public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
+                        }
+                    });
             }
         });
 

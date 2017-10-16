@@ -161,12 +161,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
+        if (mFirebaseAuth.getCurrentUser() != null) {
+            MenuItem item = menu.findItem(R.id.signIn);
+            item.setVisible(false);
+            MenuItem item1 = menu.findItem(R.id.signUp);
+            item1.setVisible(false);
+            MenuItem item2 = menu.findItem(R.id.logOut);
+            item2.setVisible(true);
+        }
+        else {
+            MenuItem item = menu.findItem(R.id.logOut);
+            item.setVisible(false);
+            MenuItem item1 = menu.findItem(R.id.signIn);
+            item1.setVisible(true);
+            MenuItem item2 = menu.findItem(R.id.signUp);
+            item2.setVisible(true);
+        }
+
+            return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
             case R.id.signUp:
                 Intent intent = new Intent(this, SignupActivity.class);
                 startActivity(intent);

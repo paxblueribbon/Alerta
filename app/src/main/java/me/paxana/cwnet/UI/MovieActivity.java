@@ -162,24 +162,6 @@ public class MovieActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
-//        trigger1PlusButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                upboat();
-//
-//            }
-//        });
-//        trigger1MinusButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                downboat();
-//            }
-//        });
-
     }
 
     @Override
@@ -196,62 +178,6 @@ public class MovieActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         imdbID = intent.getStringExtra("ID_KEY");
     }
-
-    //    private void upboat() {
-//        if (!t1countDown) {
-//            if (!t1countUp) {
-//                t1count++;
-//                updateCounter();
-//                t1countUp = true;
-//                t1countDown = false;
-//                return;
-//            } else if (t1countUp) {
-//                t1count--;
-//                updateCounter();
-//                t1countUp = false;
-//                t1countDown = false;
-//                return;
-//            }
-//        }
-//        if (t1countDown) {
-//            if (!t1countUp) {
-//                t1count+=2;
-//                updateCounter();
-//                t1countUp = true;
-//                t1countDown = false;
-//            }
-//        }
-//    }
-//
-//    private void updateCounter() {
-//        mTrigger1Counter.setText(String.valueOf(t1count));
-//    }
-
-//    private void downboat() {
-//        if (!t1countUp) {
-//            if (!t1countDown) {
-//                t1count--;
-//                updateCounter();
-//                t1countDown = true;
-//                t1countUp = false;
-//                return;
-//            } else if (t1countDown) {
-//                t1count++;
-//                updateCounter();
-//                t1countUp = false;
-//                t1countDown = false;
-//                return;
-//            }
-//        }
-//        else if (t1countUp) {
-//            if (!t1countDown) {
-//                t1count-=2;
-//                mTrigger1Counter.setText(String.valueOf(t1count));
-//                t1countDown = true;
-//                t1countUp = false;
-//            }
-//        }
-//    }
 
     private void getMovieDetails(String imdbID) throws JSONException {
         String apiKey = "face7189";
@@ -300,8 +226,6 @@ public class MovieActivity extends AppCompatActivity {
             movie.setYear(jsonObject.getString("Year"));
             movie.setSummary(jsonObject.getString("Plot"));
 
-
-
             mMovie = movie;
 
             return movie;
@@ -326,18 +250,6 @@ public class MovieActivity extends AppCompatActivity {
             }
             return x;
         }
-
-
-//    @Override
-//    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//        String item = adapterView.getItemAtPosition(i).toString();
-//        Toast.makeText(getApplicationContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
-//    }
-//
-//    @Override
-//    public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//    }
 
 }
 
