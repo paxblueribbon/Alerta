@@ -1,6 +1,5 @@
-package me.paxana.cwnet.UI;
+package me.paxana.cwnet.ui;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +8,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,8 +67,6 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
-                    //user is successfully registered
-                    //start main activity
                     if (task.isSuccessful()) {
                         Toast.makeText(SignupActivity.this, "User successfully created", Toast.LENGTH_LONG).show();
                         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -79,9 +75,6 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                                 .setDisplayName(name).build();
 
                         user.updateProfile(profileUpdates);
-
-
-
                     }
                     else {
                         Toast.makeText(SignupActivity.this, "User successfully created", Toast.LENGTH_LONG).show();
@@ -103,7 +96,5 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
-
-
     }
 }

@@ -1,6 +1,5 @@
-package me.paxana.cwnet.UI;
+package me.paxana.cwnet.ui;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -73,7 +72,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
                     }
                     else {
-                        //no such user
+                        //no such mUser
                     }
                 }
             });

@@ -1,7 +1,6 @@
 package me.paxana.cwnet.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,14 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import me.paxana.cwnet.Model.Movie;
 import me.paxana.cwnet.R;
-import me.paxana.cwnet.Model.Result;
-import me.paxana.cwnet.UI.MovieActivity;
 
 /**
  * Created by paxie on 10/5/17.

@@ -1,6 +1,7 @@
 package me.paxana.cwnet.Adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,8 +24,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
+import me.paxana.cwnet.Model.Movie;
 import me.paxana.cwnet.Model.Trigger;
 import me.paxana.cwnet.R;
+import me.paxana.cwnet.ui.AdminPanelActivity;
+import me.paxana.cwnet.ui.MovieActivity;
 
 /**
  * Created by paxie on 10/11/17.
@@ -35,22 +38,32 @@ public class TriggerAdapter extends BaseAdapter {
 
     private Context mContext;
     private List<Trigger> mTriggers;
+    private Movie mMovie;
     private String mImdbID;
+    private String mTitle;
+    private String mYear;
+    private String mPosterURL;
 
-    DatabaseReference movieDB;
-    DatabaseReference userDB;
-    DatabaseReference triggerDB;
-
-    FirebaseAuth mFirebaseAuth;
-    FirebaseUser mUser;
+    private DatabaseReference movieDB;
+    private DatabaseReference userDB;
+    private DatabaseReference triggerDB;
+    private DatabaseReference adminDB;
 
 
-    public TriggerAdapter(Context context, List<Trigger> triggerList, String imdbID){
+    public TriggerAdapter(Context context, List<Trigger> triggerList, Movie movie, String imdbID){
         mContext = context;
         this.mTriggers = triggerList;
+        mMovie = movie;
         mImdbID = imdbID;
-
+        mTitle = movie.getTitle();
+        mYear = movie.getYear();
+        mPosterURL = movie.getPosterURL();
     };
+
+    public TriggerAdapter(Context context, List<Trigger> triggerList) {
+        mContext = context;
+        this.mTriggers = triggerList;
+    }
 
     @Override
     public int getCount() {
@@ -69,14 +82,19 @@ public class TriggerAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        ViewHolder holder;
+        final ViewHolder holder;
 
-        mFirebaseAuth = FirebaseAuth.getInstance();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
-        mUser = mFirebaseAuth.getCurrentUser();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
 
         movieDB = FirebaseDatabase.getInstance().getReference("movies");
         userDB = FirebaseDatabase.getInstance().getReference("users");
+        adminDB = FirebaseDatabase.getInstance().getReference("admin");
+
+        final String mUserId = user.getUid();
+
+
 
         if (view == null) {
             view = LayoutInflater.from(mContext).inflate(R.layout.trigger_list_item, null);
@@ -86,6 +104,9 @@ public class TriggerAdapter extends BaseAdapter {
             holder.upButton = view.findViewById(R.id.mTriggerButtonUp);
             holder.downButton = view.findViewById(R.id.mTriggerButtonDown);
             holder.total = view.findViewById(R.id.triggerCounter);
+            if (mContext instanceof AdminPanelActivity) {
+                holder.upButton.setVisibility(View.INVISIBLE);
+            }
 
             view.setTag(holder);
         }
@@ -95,18 +116,19 @@ public class TriggerAdapter extends BaseAdapter {
 
         final Trigger trigger = mTriggers.get(i);
         holder.triggerName.setText(trigger.getTriggerName());
-        holder.upButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName()).child("triggerVotesYes");
-
+        if (mContext instanceof MovieActivity) {
+            holder.upButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName()).child("triggerVotesYes");
                     triggerDB.runTransaction(new Transaction.Handler() {
                         @Override
                         public Transaction.Result doTransaction(MutableData mutableData) {
                             int count = mutableData.getValue(Integer.class);
                             mutableData.setValue(count + 1);
-
+                            userDB.child(mUserId).child("changes").child(mImdbID).setValue(mMovie);
+                            userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger.getTriggerName()).setValue(1);
                             return Transaction.success(mutableData);
                         }
 
@@ -115,31 +137,34 @@ public class TriggerAdapter extends BaseAdapter {
 
                         }
                     });
-            }
-        });
+                    ;
+                    holder.upButton.setTypeface(null, Typeface.BOLD);
 
-        holder.downButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
+                }
+            });
+            holder.downButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName()).child("triggerVotesYes");
                     triggerDB.runTransaction(new Transaction.Handler() {
                         @Override
                         public Transaction.Result doTransaction(MutableData mutableData) {
                             int count = mutableData.getValue(Integer.class);
                             mutableData.setValue(count - 1);
-
+                            userDB.child(mUserId).child("changes").child(mImdbID).setValue(mMovie);
+                            userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger.getTriggerName()).setValue(-1);
                             return Transaction.success(mutableData);
                         }
+
 
                         @Override
                         public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
                         }
                     });
-            }
-        });
-
+                }
+            });
+        }
         holder.total.setText(String.format(Integer.toString(trigger.getTriggerVotesYes())));
 
         return view;

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="me.paxana.cwnet.UI.SignupActivity">
+    tools:context="me.paxana.cwnet.ui.SignupActivity">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Name"
+            android:hint="@string/name"
             android:inputType="textPersonName"/>
 
         <EditText
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Email"
+            android:hint="@string/email_address"
             android:inputType="textEmailAddress"/>
 
         <EditText
@@ -40,20 +40,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Password"
+            android:hint="@string/password"
             android:inputType="textPassword"/>
 
         <Button
             android:id="@+id/registerButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Register User"/>
+            android:text="@string/register_user"/>
 
         <TextView
             android:id="@+id/loginTextview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Already Registered?  Sign In Here!"
+            android:text="@string/already_registered_sign_in_here"
             android:textAlignment="center"/>
 
     </LinearLayout>
