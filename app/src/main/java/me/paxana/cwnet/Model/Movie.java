@@ -14,6 +14,18 @@ public class Movie {
     private String imdbRating;
     private String posterURL;
 
+    public Movie(String imdbID) {
+        this.imdbID = imdbID;
+    }
+
+    public Movie(String imdbID, String title) {
+        this.imdbID = imdbID;
+        this.title = title;
+    }
+
+    public Movie() {
+    }
+
     public String getImdbID() {
         return imdbID;
     }

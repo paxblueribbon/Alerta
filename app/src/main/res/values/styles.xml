@@ -6,6 +6,17 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+    </style>
+
+    <style name="CWTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/textPrimary</item>
+        <item name="colorPrimaryDark">@color/backgroundSecondary</item>
+        <item name="colorAccent">@color/textPrimary</item>
+        <item name="android:colorBackground">@color/backgroundPrimary</item>
+        <item name="android:colorForeground">@color/textPrimary</item>
+        <item name="android:logo">@drawable/cwnet</item>
+        <item name="android:displayOptions">useLogo|showHome</item>
     </style>
 
 </resources>

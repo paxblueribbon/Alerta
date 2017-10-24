@@ -1,4 +1,17 @@
 <resources>
-    <string name="app_name">CWnet</string>
+    <string name="app_name">Alerta</string>
     <string name="Greetings_message">Greetings %1$s</string>
+    <string name="email_address">Email Address</string>
+    <string name="password">Password</string>
+    <string name="log_in">Log In</string>
+    <string name="register_user">Register User</string>
+    <string name="already_registered_sign_in_here">Already Registered? Sign In Here!</string>
+    <string name="name">Name</string>
+    <string name="change_display_name">Change Display Name</string>
+    <string name="change_email_address">Change Email Address</string>
+    <string name="change_password">Change Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="apply_changes">Apply Changes</string>
+    <string name="enter_movie_title">Enter Movie Title</string>
+    <string name="no_account_create_one_here">No Account? Create one here.</string>
 </resources>
