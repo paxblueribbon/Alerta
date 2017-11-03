@@ -104,8 +104,8 @@ public class ProfileActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot movieSnapshot : dataSnapshot.getChildren()) {
                     Movie movie = new Movie();
-                    movie.setTitle(movieSnapshot.child("title").getValue().toString());
-                    movie.setImdbID(movieSnapshot.child("imdbID").getValue().toString());
+                    movie.setTitle(movieSnapshot.child("details").child("title").getValue().toString());
+                    movie.setImdbID(movieSnapshot.child("details").child("imdbID").getValue().toString());
                     movieList.add(movie);
                 }
                 // just a test of my sorting ability

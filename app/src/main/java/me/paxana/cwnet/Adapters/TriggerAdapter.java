@@ -1,9 +1,13 @@
 package me.paxana.cwnet.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +16,10 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.andremion.counterfab.CounterFab;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,7 +50,6 @@ public class TriggerAdapter extends BaseAdapter {
     private String mYear;
     private String mPosterURL;
 
-    private DatabaseReference movieDB;
     private DatabaseReference userDB;
     private DatabaseReference triggerDB;
     private DatabaseReference adminDB;
@@ -81,22 +86,24 @@ public class TriggerAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, View view, final ViewGroup viewGroup) {
         final ViewHolder holder;
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
-        movieDB = FirebaseDatabase.getInstance().getReference("movies");
+        DatabaseReference movieDB = FirebaseDatabase.getInstance().getReference("movies");
         userDB = FirebaseDatabase.getInstance().getReference("users");
         adminDB = FirebaseDatabase.getInstance().getReference("admin");
 
         final String mUserId = user.getUid();
+        Trigger trigger = mTriggers.get(i);
 
-
+//        triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName());
 
         if (view == null) {
+//            triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName());
             view = LayoutInflater.from(mContext).inflate(R.layout.trigger_list_item, null);
 
             holder = new ViewHolder();
@@ -104,9 +111,6 @@ public class TriggerAdapter extends BaseAdapter {
             holder.upButton = view.findViewById(R.id.mTriggerButtonUp);
             holder.downButton = view.findViewById(R.id.mTriggerButtonDown);
             holder.total = view.findViewById(R.id.triggerCounter);
-            if (mContext instanceof AdminPanelActivity) {
-                holder.upButton.setVisibility(View.INVISIBLE);
-            }
 
             view.setTag(holder);
         }
@@ -114,66 +118,241 @@ public class TriggerAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
 
-        final Trigger trigger = mTriggers.get(i);
         holder.triggerName.setText(trigger.getTriggerName());
 
-        if (mContext instanceof MovieActivity) {
-            holder.upButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName()).child("triggerVotesYes");
-                    triggerDB.runTransaction(new Transaction.Handler() {
-                        @Override
-                        public Transaction.Result doTransaction(MutableData mutableData) {
-                            int count = mutableData.getValue(Integer.class);
-                            mutableData.setValue(count + 1);
-                            userDB.child(mUserId).child("changes").child(mImdbID).setValue(mMovie);
-                            userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger.getTriggerName()).setValue(1);
-                            return Transaction.success(mutableData);
-                        }
-
-                        @Override
-                        public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-                        }
-                    });
-                    ;
-                    holder.upButton.setTypeface(null, Typeface.BOLD);
-
-                }
-            });
+        if (mContext instanceof AdminPanelActivity) {
+//            holder.upButton.setVisibility(View.INVISIBLE);
+            holder.upButton.setBackgroundResource(R.drawable.icons8edit);
+//            holder.upButton.setImageDrawable(R.drawable.icons8edit);
+//            holder.upButton.setBackground();
             holder.downButton.setOnClickListener(new View.OnClickListener() {
+
                 @Override
                 public void onClick(View view) {
-                    triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName()).child("triggerVotesYes");
-                    triggerDB.runTransaction(new Transaction.Handler() {
-                        @Override
-                        public Transaction.Result doTransaction(MutableData mutableData) {
-                            int count = mutableData.getValue(Integer.class);
-                            mutableData.setValue(count - 1);
-                            userDB.child(mUserId).child("changes").child(mImdbID).setValue(mMovie);
-                            userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger.getTriggerName()).setValue(-1);
-                            return Transaction.success(mutableData);
-                        }
-
-
-                        @Override
-                        public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-                        }
-                    });
+                    Trigger trigger1 = mTriggers.get(i);
+                    adminDB.child("triggerList").child(trigger1.getTriggerName()).removeValue();
+                    int i = mTriggers.indexOf(trigger1);
+                    mTriggers.remove(i);
+                    TriggerAdapter.this.notifyDataSetChanged();
                 }
             });
         }
-        holder.total.setText(String.format(Integer.toString(trigger.getTriggerVotesYes())));
 
+        if (mContext instanceof MovieActivity) {
+            triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName());
+
+            triggerDB.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Trigger trigger;
+                    trigger = dataSnapshot.getValue(Trigger.class);
+                    holder.total.setText(String.valueOf(trigger.getTriggerVotesTotal()));
+                    holder.upButton.setCount(trigger.getTriggerVotesYes());
+                    int downBoats = (trigger.getTriggerVotesTotal() - trigger.getTriggerVotesYes());
+                    holder.downButton.setCount(downBoats);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger.getTriggerName()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
+                        int userVote = dataSnapshot.getValue(Integer.class);
+
+                        if (userVote == 0) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent, null));
+                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent, null));
+
+                            }
+                            else {
+                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
+                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
+                            }
+
+                            neitherButtonIsSelected(holder, i, mUserId);
+                        }
+                        if (userVote == 1) {
+                            //user has voted yuppers
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.votebuttons, null));
+                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent, null));
+
+                            }
+                            else {
+                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.votebuttons));
+                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
+                            }
+                            upButtonIsSelected(holder, i, mUserId);
+                        }
+                        if (userVote == -1) {
+                            //user has voted nopers
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent, null));
+                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.votebuttons, null));
+
+                            }
+                            else {
+                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
+                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.votebuttons));
+                            }
+                            downButtonIsSelected(holder, i, mUserId);
+                        }
+                    }
+                    else {
+                        Trigger trigger1 = mTriggers.get(i);
+                        userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger1.getTriggerName()).setValue(0);
+                        Movie movie = new Movie(mImdbID, mTitle);
+                        userDB.child(mUserId).child("changes").child(mImdbID).child("details").setValue(movie);
+
+
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        }
         return view;
     }
 
     private static class ViewHolder {
         TextView triggerName;
-        Button upButton;
-        Button downButton;
+        CounterFab upButton;
+        CounterFab downButton;
         TextView total;
+    }
+    private void neitherButtonIsSelected(final ViewHolder holder, final int i, final String mUserId) {
+        final DatabaseReference movieDB = FirebaseDatabase.getInstance().getReference("movies");
+
+
+
+        holder.upButton.setOnClickListener(new View.OnClickListener() {
+            Trigger trigger1 = mTriggers.get(i);
+            DatabaseReference triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger1.getTriggerName());
+
+            @Override
+            public void onClick(View view) {
+                Log.d("fvck", trigger1.getTriggerName());
+
+                triggerDB.child("triggerVotesYes").runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        int count = mutableData.getValue(Integer.class);
+                        mutableData.setValue(count + 1);
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+                triggerDB.child("triggerVotesTotal").runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        int count = mutableData.getValue(Integer.class);
+                        mutableData.setValue(count + 1);
+
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+                userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger1.getTriggerName()).setValue(1);
+            }
+        });
+
+        holder.downButton.setOnClickListener(new View.OnClickListener() {
+            Trigger trigger1 = mTriggers.get(i);
+            DatabaseReference triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger1.getTriggerName());
+
+            @Override
+            public void onClick(final View view) {
+
+                triggerDB.child("triggerVotesTotal").runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        int count = mutableData.getValue(Integer.class);
+                        mutableData.setValue(count + 1);
+
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                    }
+                });
+                userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger1.getTriggerName()).setValue(-1);
+            }
+        });
+    }
+
+    private void upButtonIsSelected(final ViewHolder holder, final int i, final String mUserId) {
+        final DatabaseReference movieDB = FirebaseDatabase.getInstance().getReference("movies");
+
+        holder.upButton.setOnClickListener(null);
+        holder.downButton.setOnClickListener(new View.OnClickListener() {
+            Trigger trigger1 = mTriggers.get(i);
+            DatabaseReference triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger1.getTriggerName());
+
+            @Override
+            public void onClick(final View view) {
+                triggerDB.child("triggerVotesYes").runTransaction(new Transaction.Handler() {
+                    Trigger trigger1 = mTriggers.get(i);
+                    @Override
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        int count = mutableData.getValue(Integer.class);
+                        mutableData.setValue(count - 1);
+                        userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger1.getTriggerName()).setValue(-1);
+                        return Transaction.success(mutableData);
+                    }
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+                userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger1.getTriggerName()).setValue(-1);
+            }
+        });
+    }
+    private void downButtonIsSelected(final ViewHolder holder, final int i, final String mUserId) {
+        final DatabaseReference movieDB = FirebaseDatabase.getInstance().getReference("movies");
+
+        holder.downButton.setOnClickListener(null);
+        holder.upButton.setOnClickListener(new View.OnClickListener() {
+            Trigger trigger1 = mTriggers.get(i);
+            DatabaseReference triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger1.getTriggerName());
+
+            @Override
+            public void onClick(final View view) {
+                triggerDB.child("triggerVotesYes").runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        int count = mutableData.getValue(Integer.class);
+                        mutableData.setValue(count + 1);
+                        userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger1.getTriggerName()).setValue(1);
+                        return Transaction.success(mutableData);
+                    }
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                    }
+                });
+                userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger1.getTriggerName()).setValue(1);
+            }
+        });
     }
 }
