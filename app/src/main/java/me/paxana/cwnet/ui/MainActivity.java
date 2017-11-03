@@ -22,8 +22,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,12 +56,14 @@ public class MainActivity extends AppCompatActivity {
 
     Button searchButton;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+
     private EditText mMovieTitle;
     private ListView mListView;
     private TextView mGreetingsTextView;
     private Menu mMenu;
     DatabaseReference adminDB;
-
 
     FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
     FirebaseUser mUser = mFirebaseAuth.getCurrentUser();
@@ -74,9 +81,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
 
         updateOptionsMenu();
+        MobileAds.initialize(this, "ca-app-pub-7338499199160030~7379357533");
 
+        AdView adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
         searchButton = (Button) findViewById(R.id.searchButton);
         searchButton.setVisibility(View.INVISIBLE);
         mMovieTitle = (EditText) findViewById(R.id.movieTitle);

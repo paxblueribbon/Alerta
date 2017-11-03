@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -15,7 +15,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -24,12 +23,17 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
+import me.paxana.cwnet.Adapters.ExpandableListAdapter;
 import me.paxana.cwnet.Adapters.TriggerAdapter;
+import me.paxana.cwnet.Model.Category;
 import me.paxana.cwnet.Model.Movie;
 import me.paxana.cwnet.Model.Trigger;
 import me.paxana.cwnet.R;
@@ -46,10 +50,25 @@ public class MovieActivity extends AppCompatActivity {
     private TextView mTitleTextView;
     private TextView mYearTextView;
     private TextView mSummaryTextView;
-    private ListView triggerListView;
+    private ExpandableListView triggerListView;
     private ArrayList<Trigger> mTriggerPrefList;
     private Movie mMovie;
     private LinkedList<Trigger> resultList;
+    private ArrayList<String> templist;
+    ArrayList<Category> mCategoryList = new ArrayList<>();
+    List<String> listDataHeader;
+    HashMap<String, List<String>> listDataChild;
+
+    ArrayList<Trigger> l1 = new ArrayList<>();
+    ArrayList<Trigger> l2 = new ArrayList<>();
+    Trigger t1;
+    Trigger t2;
+    Trigger t3;
+    Trigger t4;
+    Trigger t5;
+    Trigger t6;
+    Category c1;
+    Category c2;
 
     DatabaseReference movieDB;
     DatabaseReference userDB;
@@ -73,7 +92,7 @@ public class MovieActivity extends AppCompatActivity {
         mTitleTextView = (TextView) findViewById(R.id.titleTextView);
         mYearTextView = (TextView) findViewById(R.id.yearTextView);
         mSummaryTextView = (TextView) findViewById(R.id.summaryTextView);
-        triggerListView = (ListView) findViewById(R.id.triggerListView);
+        triggerListView = (ExpandableListView) findViewById(R.id.triggerListView);
 
 
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -110,27 +129,34 @@ public class MovieActivity extends AppCompatActivity {
                                     populatePrefs(new Runnable() {
                                         @Override
                                         public void run() {
-                                            for (Trigger trigger : mTriggerList) {
-                                                Log.d("CWWNET mtriggerlist", trigger.getTriggerName());
-
-                                            }
-                                            for (Trigger trigger : mTriggerList) {
-                                                Log.d("CWWNET mtriggerpreflist", trigger.getTriggerName());
-                                            }
-
                                             reOrderList(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    Log.d("Lastest TORPEDO", "FIRED");
-//                                String s1 = resultList.get(0).getTriggerName();
-//                                Log.d("NameyName", s1);
                                                     Movie passMovie = new Movie();
                                                     passMovie.setImdbID(imdbID);
                                                     passMovie.setPosterURL(keyPoster);
                                                     passMovie.setYear(keyYear);
                                                     passMovie.setTitle(keyTitle);
-                                                    TriggerAdapter adapter = new TriggerAdapter(MovieActivity.this, resultList, passMovie, imdbID );
+//                                                    TriggerAdapter adapter = new TriggerAdapter(MovieActivity.this, resultList, passMovie, imdbID );
+//                                                    triggerListView.setAdapter(adapter);
+
+                                                    ExpandableListAdapter adapter = new ExpandableListAdapter(MovieActivity.this, mCategoryList);
                                                     triggerListView.setAdapter(adapter);
+
+//                                                    String key1 = adminDB.child("triggerList").push().getKey();
+//                                                    String key2 = adminDB.child("triggerList").push().getKey();
+//                                                    String key3 = adminDB.child("triggerList").push().getKey();
+//                                                    String key4 = adminDB.child("triggerList").push().getKey();
+//
+//                                                    Trigger trigger1 = new Trigger("Trigger 1", 0, 0);
+//                                                    Trigger trigger2 = new Trigger("Trigger 2", 0, 0);
+//                                                    Trigger trigger3 = new Trigger("Trigger 3", 0, 0);
+//                                                    Trigger trigger4 = new Trigger("Trigger 4", 0, 0);
+//
+//                                                    adminDB.child("triggerList").child(key1).setValue(trigger1);
+//                                                    adminDB.child("triggerList").child(key2).setValue(trigger2);
+//                                                    adminDB.child("triggerList").child(key3).setValue(trigger3);
+//                                                    adminDB.child("triggerList").child(key4).setValue(trigger4);
                                                 }
                                             });
 
@@ -146,7 +172,6 @@ public class MovieActivity extends AppCompatActivity {
             e.printStackTrace();
         }
                 thisMovieDB = movieDB.child(imdbID);
-                thisMovieDB.child("Details").setValue(mMovie);
                 triggerDB = thisMovieDB.child("Triggers");
 
     }
@@ -199,7 +224,6 @@ public class MovieActivity extends AppCompatActivity {
             }
 
         });
-        Log.d("extra torpedo: ", "FIRED");
         runnable.run();
     }
 
@@ -229,161 +253,286 @@ public class MovieActivity extends AppCompatActivity {
         }
 
         private void populatePrefs(final Runnable runnable) {
-            mTriggerPrefList = new ArrayList<>();
-            Log.d("FIRING TORPEDOS", "Populate Prefs");
-
-            mFirebaseAuth = FirebaseAuth.getInstance();
-
-            mUser = mFirebaseAuth.getCurrentUser();
-
-            movieDB = FirebaseDatabase.getInstance().getReference("movies");
-            userDB = FirebaseDatabase.getInstance().getReference("users");
-            adminDB = FirebaseDatabase.getInstance().getReference("admin");
-            thisMovieDB = movieDB.child(imdbID);
-            thisMovieDB.child("Details").setValue(mMovie);
-            triggerDB = thisMovieDB.child("Triggers");
-
-            userDB.child(mUser.getUid()).child("preferences").child("trigger").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    for (DataSnapshot triggerSnapshot : dataSnapshot.getChildren()) {
-
-                        String name = String.valueOf(triggerSnapshot.child("triggerName").getValue());
-                        Log.d("TriggerName wots", name);
-                        Trigger trigger = new Trigger();
-                        trigger.setTriggerName(name);
-                        trigger.setTriggerVotesTotal(0);
-                        trigger.setTriggerVotesYes(0);
-                        mTriggerPrefList.add(trigger);
-                    }
-
-                    Intent intent = getIntent();
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-
-                    imdbID = intent.getStringExtra("ID_KEY");
+//            mTriggerPrefList = new ArrayList<>();
+//
+//            mFirebaseAuth = FirebaseAuth.getInstance();
+//
+//            mUser = mFirebaseAuth.getCurrentUser();
+//
+//            movieDB = FirebaseDatabase.getInstance().getReference("movies");
+//            userDB = FirebaseDatabase.getInstance().getReference("users");
+//            adminDB = FirebaseDatabase.getInstance().getReference("admin");
+//            thisMovieDB = movieDB.child(imdbID);
+//            //thisMovieDB.child("Details").setValue(mMovie);
+//            triggerDB = thisMovieDB.child("Triggers");
+//
+//            userDB.child(mUser.getUid()).child("preferences").child("trigger").addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                    for (DataSnapshot triggerSnapshot : dataSnapshot.getChildren()) {
+//
+//                        String name = String.valueOf(triggerSnapshot.child("triggerName").getValue());
+//                        Trigger trigger = new Trigger();
+//                        trigger.setTriggerName(name);
+//                        trigger.setTriggerVotesTotal(0);
+//                        trigger.setTriggerVotesYes(0);
+//                        mTriggerPrefList.add(trigger);
+//                    }
+//
+//                    Intent intent = getIntent();
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//
+//                    imdbID = intent.getStringExtra("ID_KEY");
                     runnable.run();
 
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-
-            });
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//                }
+//            });
         }
 
         private void populateTriggers(final Runnable runnable) {
-            mTriggerList = new ArrayList<>();
-            mFirebaseAuth = FirebaseAuth.getInstance();
-            Log.d("FIRING TORPEDOS", "Populate Triggers");
+//            listDataHeader = new ArrayList<String>();
+//            listDataChild = new HashMap<String, List<String>>();
+//
+//            // Adding child data
+//            listDataHeader.add("Top 250");
+//            listDataHeader.add("Now Showing");
+//            listDataHeader.add("Coming Soon..");
+//
+//            // Adding child data
+//            List<String> top250 = new ArrayList<String>();
+//            top250.add("The Shawshank Redemption");
+//            top250.add("The Godfather");
+//            top250.add("The Godfather: Part II");
+//            top250.add("Pulp Fiction");
+//            top250.add("The Good, the Bad and the Ugly");
+//            top250.add("The Dark Knight");
+//            top250.add("12 Angry Men");
+//
+//            List<String> nowShowing = new ArrayList<String>();
+//            nowShowing.add("The Conjuring");
+//            nowShowing.add("Despicable Me 2");
+//            nowShowing.add("Turbo");
+//            nowShowing.add("Grown Ups 2");
+//            nowShowing.add("Red 2");
+//            nowShowing.add("The Wolverine");
+//
+//            List<String> comingSoon = new ArrayList<String>();
+//            comingSoon.add("2 Guns");
+//            comingSoon.add("The Smurfs 2");
+//            comingSoon.add("The Spectacular Now");
+//            comingSoon.add("The Canyons");
+//            comingSoon.add("Europa Report");
+//
+//            listDataChild.put(listDataHeader.get(0), top250); // Header, Child data
+//            listDataChild.put(listDataHeader.get(1), nowShowing);
+//            listDataChild.put(listDataHeader.get(2), comingSoon);
+//
+//            runnable.run();
 
-            mUser = mFirebaseAuth.getCurrentUser();
 
-            movieDB = FirebaseDatabase.getInstance().getReference("movies");
-            userDB = FirebaseDatabase.getInstance().getReference("users");
-            adminDB = FirebaseDatabase.getInstance().getReference("admin");
-            thisMovieDB = movieDB.child(imdbID);
-            thisMovieDB.child("Details").setValue(mMovie);
-            triggerDB = thisMovieDB.child("Triggers");
+//            mTriggerList = new ArrayList<>();
+//            mFirebaseAuth = FirebaseAuth.getInstance();
+//            mUser = mFirebaseAuth.getCurrentUser();
+//
+//            movieDB = FirebaseDatabase.getInstance().getReference("movies");
+//            userDB = FirebaseDatabase.getInstance().getReference("users");
+//            adminDB = FirebaseDatabase.getInstance().getReference("admin");
+//            thisMovieDB = movieDB.child(imdbID);
+//            thisMovieDB.child("Details").setValue(mMovie);
+//            triggerDB = thisMovieDB.child("Triggers");
+//
+//            triggerDB.addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                    for (DataSnapshot triggerSnapshot : dataSnapshot.getChildren()) {
+//                        Trigger trigger = triggerSnapshot.getValue(Trigger.class);
+//                        mTriggerList.add(trigger);
+//                    }
+//                    runnable.run();
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//
+//                }
+//            });
+            ArrayList<String> cat1 = new ArrayList<>();
+            ArrayList<String> cat2 = new ArrayList<>();
+            ArrayList<String> cat3 = new ArrayList<>();
 
-            triggerDB.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+            String c1 = "Category 1";
+            String c2 = "Category 2";
+            String c3 = "Category 3";
+            cat1.add(c1);
+            cat1.add(c2);
+            cat2.add(c2);
+            cat3.add(c3);
 
-                    mTriggerList.clear();
+            t1 = new Trigger("Trigger 1", "1", 0, 0, cat1);
+            t2 = new Trigger("Trigger 2", "2", 0, 0, cat2);
+            t3 = new Trigger("Trigger 3", "3", 0, 0, cat3);
 
-                    for (DataSnapshot triggerSnapshot : dataSnapshot.getChildren()) {
-                        Trigger trigger = triggerSnapshot.getValue(Trigger.class);
-                        mTriggerList.add(trigger);
+            t4 = new Trigger("Trigger 4", "4", 0, 0, cat2);
+            t5 = new Trigger("Trigger 5", "5", 0, 0, cat3);
+            t6 = new Trigger("Trigger 6", "6", 0, 0, cat2);
+
+            ArrayList<Trigger> testList = new ArrayList<>();
+            testList.add(t1);
+            testList.add(t2);
+            testList.add(t3);
+            testList.add(t4);
+            testList.add(t5);
+            testList.add(t6);
+
+            Map<String, List<Trigger>> subs = new HashMap<String, List<Trigger>>();
+
+            for (Trigger t : testList) {
+                ArrayList<String> catList = t.getCategory();
+                for (String cat : catList) {
+                    ArrayList<Trigger> temp = (ArrayList<Trigger>) subs.get(cat);
+
+                    if (temp == null) {
+                        temp = new ArrayList<>();
+                        subs.put(cat, temp);
                     }
-                    runnable.run();
-                }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-        }
-        private void reOrderList(Runnable runnable) {
-            resultList = new LinkedList<>();
-            // just a test of my sorting ability
-
-            for (Trigger triggerA : mTriggerList) {
-                boolean found = false;
-                for (Trigger triggerB : mTriggerPrefList) {
-                    Log.d("Compare A", triggerA.getTriggerName());
-                    Log.d("Compare B", triggerB.getTriggerName());
-                    if (triggerB.getTriggerName().equals(triggerA.getTriggerName())) {
-                        found = true;
-                        Log.d("holeup", triggerB.getTriggerName());
-                    }
-                }
-                if (found) {
-                    resultList.add(triggerA);
+                    temp.add(t);
                 }
             }
-            mTriggerList.removeAll(resultList);
-            resultList.addAll(mTriggerList);
-            // end test
+
+            for (Map.Entry entry : subs.entrySet()) {
+                String key = entry.getKey().toString();
+                ArrayList value = (ArrayList) entry.getValue();
+
+                Category category = new Category(key, 0, 0, value);
+
+                mCategoryList.add(category);
+            }
+
+            
+//            ArrayList<Trigger> tl1 = new ArrayList<>();
+//            ArrayList<Trigger> cl1 = new ArrayList<>();
+//            ArrayList<Trigger> cl2 = new ArrayList<>();
+//
+//            cl1.add(t1);
+//            cl1.add(t2);
+//            cl1.add(t3);
+//            cl2.add(t4);
+//            cl2.add(t5);
+//            cl2.add(t6);
+//
+//            Category c1 = new Category("Category 1", 0, 0, cl1);
+//            Category c2 = new Category("Category 2", 0, 0, cl2);
+//
+//            String k1 = adminDB.child("categoryList").push().getKey();
+//            String k2 = adminDB.child("categoryList").push().getKey();
+//
+//            adminDB.child("categoryList").child(k1).setValue(c1);
+//            adminDB.child("categoryList").child(k2).setValue(c2);
+
+//            adminDB.child("categoryList").addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    for (DataSnapshot childsnapshot : dataSnapshot.getChildren()) {
+//                        Category category = childsnapshot.getValue(Category.class);
+//                        mCategoryList.add(category);
+//
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//
+//                }
+//            });
+
+
+//            for (Trigger trigger : tl1) {
+//                for (Category category : mCategoryList) {
+//                    ArrayList<String> categoryList = trigger.getCategories();
+//                    if (categoryList.contains(category.getCategoryName())) {
+//                        category.addToTriggerList(trigger);
+//                    }
+//                }
+//            }
+            Log.d("ZZZZZ1", String.valueOf(mCategoryList));
+
+            Log.d("ZZZZZ", t6.getTriggerName());
+
+//            mCategoryList.add(c1);
+//            mCategoryList.add(c2);
+            runnable.run();
+
+        }
+
+        private void reOrderList(Runnable runnable) {
+//            resultList = new LinkedList<>();
+//
+//            for (Trigger triggerA : mTriggerList) {
+//                boolean found = false;
+//                for (Trigger triggerB : mTriggerPrefList) {
+//                    if (triggerB.getTriggerName().equals(triggerA.getTriggerName())) {
+//                        found = true;
+//                    }
+//                }
+//                if (found) {
+//                    if (!resultList.contains(triggerA)) {
+//                        resultList.add(triggerA);
+//                    }
+//                }
+//            }
+//            mTriggerList.removeAll(resultList);
+//            resultList.addAll(mTriggerList);
+//
+//            mTriggerList.addAll(resultList);
 
             runnable.run();
     }
 
     private void CheckForTriggerValues(final Runnable runnable) {
-        adminDB.child("triggerList").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {};
-
-                final Map<String, Object> triggerList = dataSnapshot.getValue(genericTypeIndicator);
-
-                triggerDB.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        for (Map.Entry<String, Object> entry : triggerList.entrySet())
-                        {
-                            if (dataSnapshot.hasChild(entry.getKey())){
+//        adminDB.child("triggerList").addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {};
 //
-                            }
-                            else {
-                                Trigger trigger1 = new Trigger(entry.getKey(), 0, 0);
-                                triggerDB.child(trigger1.getTriggerName()).setValue(trigger1);
-                            }
-                        }
+//                final Map<String, Object> triggerList = dataSnapshot.getValue(genericTypeIndicator);
+//
+//                triggerDB.addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                        for (Map.Entry<String, Object> entry : triggerList.entrySet())
+//                        {
+//                            if (dataSnapshot.hasChild(entry.getKey())){
+////
+//                            }
+//                            else {
+//                                Trigger trigger1 = new Trigger(entry.getKey(), 0, 0);
+//                                triggerDB.child(trigger1.getTriggerName()).setValue(trigger1);
+//                            }
+//                        }
                         runnable.run();
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-        });
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
     }
-
-        int isTrue(Boolean boolDown, Boolean boolUp) {
-            int x = 0;
-            if (boolUp) {
-                 x = 1;
-            }
-            if (boolDown) {
-                x = -1;
-            }
-            return x;
-        }
 
 }
 

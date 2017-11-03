@@ -24,7 +24,8 @@
         </activity>
         <activity android:name=".ui.LoginActivity">
         </activity>
-        <activity android:name=".ui.MovieActivity">
+        <activity android:name=".ui.MovieActivity"
+                  android:windowSoftInputMode="stateHidden|adjustNothing">
         </activity>
         <activity
             android:name=".ui.ProfileActivity"
