@@ -11,7 +11,7 @@ public class Movie {
     private String year;
     private String summary;
     private String mpaaRating;
-    private String imdbRating;
+    private double imdbRating;
     private String posterURL;
 
     public Movie(String imdbID) {
@@ -66,11 +66,11 @@ public class Movie {
         this.mpaaRating = mpaaRating;
     }
 
-    public String getImdbRating() {
+    public double getImdbRating() {
         return imdbRating;
     }
 
-    public void setImdbRating(String imdbRating) {
+    public void setImdbRating(double imdbRating) {
         this.imdbRating = imdbRating;
     }
 

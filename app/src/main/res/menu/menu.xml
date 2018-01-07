@@ -4,24 +4,21 @@
 
     <item
         android:id="@+id/optionsSearchButton"
-        android:icon="@android:drawable/ic_search_category_default"
-        android:title="Item"
-        app:showAsAction="always"/>
-    <item
-        android:id="@+id/signIn"
-        android:title="Sign In"/>
+        android:icon="@drawable/icons8search50"
+        android:title="@string/item"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/signUp"
-        android:title="Sign Up"/>
+        android:title="@string/sign_in_sign_up"/>
     <item
         android:id="@+id/logOut"
-        android:title="Log Out"/>
+        android:title="@string/log_out"/>
     <item
         android:id="@+id/profile"
-        android:title="Profile"
+        android:title="@string/profile"
         app:showAsAction="always"/>
     <item
         android:id="@+id/adminPanelMenu"
-        android:title="Admin Panel"/>
+        android:title="@string/admin_panel"/>
 
 </menu>

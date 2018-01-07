@@ -9,7 +9,7 @@ import java.util.List;
  * Created by paxie on 10/30/17.
  */
 
-public class Category implements Comparable<Category> {
+public class Category {
 
     private String mCategoryName;
     private int mCategoryVotesYes;
@@ -60,10 +60,5 @@ public class Category implements Comparable<Category> {
 
     public void addToTriggerList(Trigger newTrigger) {
         mTriggerList.add(newTrigger);
-    }
-
-    @Override
-    public int compareTo(@NonNull Category cat) {
-        return mCategoryName.compareTo(cat.getCategoryName());
     }
 }

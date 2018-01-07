@@ -3,7 +3,7 @@
     <string name="Greetings_message">Greetings %1$s</string>
     <string name="email_address">Email Address</string>
     <string name="password">Password</string>
-    <string name="log_in">Log In</string>
+    <string name="log_in">Log In / Sign Up</string>
     <string name="register_user">Register User</string>
     <string name="already_registered_sign_in_here">Already Registered? Sign In Here!</string>
     <string name="name">Name</string>
@@ -14,4 +14,54 @@
     <string name="apply_changes">Apply Changes</string>
     <string name="enter_movie_title">Enter Movie Title</string>
     <string name="no_account_create_one_here">No Account? Create one here.</string>
+    <string name="metawarning">As this is an app for content/trigger warnings, by its very nature it must contain name and descriptions of movies, as well as the names of triggers themselves.  This content can itself be triggering.  Ask yourself if you\'re ready to see these things     We try our best to keep accurate info and prevent the actions of malicious actors, but can\'t promise that it will be 100% accurate all the time.  The easiest way to help us keep accurate records is to make an account and vote on triggers in movies you know.</string>
+    <string name="assertConsent">OK, I\'m ready.</string>
+    <string name="rejectConsent">I\'m not ready.</string>
+    <string name="facebook_application_id">1764604087174134</string>
+    <string name="fb_login_protocol_scheme">fb1764604087174134</string>
+    <string name="name_hint">Display name</string>
+    <string name="fui_name_hint" translation_description="Hint for last name input field">Preferred display name</string>
+    <string name="Title">(Alerta)</string>
+
+    <!--For the intro warning-->
+    <string name="title_activity_welcome">Home Screen</string>
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">GOT IT</string>
+
+    <string name="slide_1_title">Welcome To Alerta!</string>
+    <string name="slide_1_desc">An app to help apply user-generated content/trigger warnings.  It can be a tool/resource for users with PTSD, trauma, or who just aren\'t able to see certain content at certain times.  Here are a few things to keep in mind when using Alerta. </string>
+
+    <string name="slide_2_title">Meta-Warning</string>
+    <string name="slide_2_desc">In order to discuss triggering things, it is necessary to address them by name.  This app contains the names of some of the most common triggers.  In addition, the movie names and descriptions are generated from IMDB, and may contain triggering words or ideas.  If that's not something you're prepared for, now may be a good time to close the app.</string>
+
+    <string name="slide_3_title">Accuracy</string>
+    <string name="slide_3_desc">The content warnings on Alerta are user-generated.  We don\'t hand-curate the content so we can\'t promise its accuracy.  In general the more votes something has the more accurate it will be, and we promise to maintain diligence in looking for trolls.  The best way to help us with that is to make an account and vote on movies you\'ve seen.</string>
+
+    <string name="slide_4_title">Anonymity</string>
+    <string name="slide_4_desc">Users concerned for their anonymity will always be able to view movies and their potential triggers.  In order to vote on triggers, which is optional but helps make Alerta work, you\'ll need to register an account.  To avoid malicious users these accounts will need to be validated  </string>
+
+    <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> Alerta -> clear data</string>
+    <string name="play_again">Play Again</string>
+    <string name="item">Item</string>
+    <string name="sign_in_sign_up">Sign In / Sign UP</string>
+    <string name="log_out">Log Out</string>
+    <string name="profile">Profile</string>
+    <string name="admin_panel">Admin Panel</string>
+    <string name="new_trigger_name">New Trigger Name</string>
+    <string name="category_1">Category 1</string>
+    <string name="category_3">Category 3</string>
+    <string name="category_5">Category 5</string>
+    <string name="category_2">Category 2</string>
+    <string name="category_4">Category 4</string>
+    <string name="category_6">Category 6</string>
+    <string name="plusSign">+</string>
+    <string name="minus">-</string>
+    <string name="sign_in_sign_up_now">Sign In / Sign Up Now</string>
+    <string name="no_reviews">Nobody has reviewed this movie for its potentially triggering content. Please consider logging in or creating an account so you can do that.</string>
+    <string name="movie_poster">Movie Poster</string>
+    <string name="anon_login">Use Alerta Anonymously</string>
+    <string name="use_alerta_non_anon">Using Alerta With An Account Will Require Phone, Facebook, or Google+ Verification, But Will Enable All Services Including Voting</string>
+    <string name="use_alerta_anon">Using Alerta Anonymously Doesn\'t Require Any Verification, Allows You To View Any Movies But Not Contribute To The Project By Voting</string>
+
 </resources>

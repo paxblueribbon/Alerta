@@ -9,27 +9,19 @@ import java.util.ArrayList;
 public class Trigger {
 
     private String mTriggerName;
-    private int mTriggerVotesYes;
-    private int mTriggerVotesTotal;
     private ArrayList<String> mCategory;
     private String mId;
 
-    public Trigger(String triggerName, String id, int triggerVotesYes, int triggerVotesTotal) {
+    public Trigger(String triggerName, ArrayList<String> category, String id) {
         mTriggerName = triggerName;
-        mId = id;
-        mTriggerVotesYes = triggerVotesYes;
-        mTriggerVotesTotal = triggerVotesTotal;
-    }
-
-    public Trigger(String triggerName, String id, int triggerVotesYes, int triggerVotesTotal, ArrayList<String> category) {
-        mTriggerName = triggerName;
-        mTriggerVotesYes = triggerVotesYes;
-        mTriggerVotesTotal = triggerVotesTotal;
         mCategory = category;
         mId = id;
     }
 
-    public Trigger(){
+    public Trigger() {
+    }
+
+    public Trigger(String name, String testString, int i, int i1, ArrayList<String> testCatList){
     }
 
     public String getTriggerName() {
@@ -40,20 +32,6 @@ public class Trigger {
         mTriggerName = triggerName;
     }
 
-    public int getTriggerVotesYes() {
-        return mTriggerVotesYes;
-    }
-
-    public void setTriggerVotesYes(int triggerVotesYes) {
-        mTriggerVotesYes = triggerVotesYes;
-    }
-
-    public int getTriggerVotesTotal() {
-        return mTriggerVotesTotal;
-    }
-
-    public void setTriggerVotesTotal(int triggerVotesTotal) { mTriggerVotesTotal = triggerVotesTotal; }
-
     public ArrayList<String> getCategory() {
         return mCategory;
     }
@@ -62,5 +40,11 @@ public class Trigger {
         mCategory = category;
     }
 
+    public String getId() {
+        return mId;
+    }
 
+    public void setId(String id) {
+        mId = id;
+    }
 }

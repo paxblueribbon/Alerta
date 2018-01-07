@@ -1,17 +1,16 @@
 package me.paxana.cwnet.ui;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,7 +18,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import me.paxana.cwnet.Adapters.TriggerAdapter;
 import me.paxana.cwnet.Model.Trigger;
@@ -34,8 +32,15 @@ public class AdminPanelActivity extends AppCompatActivity {
     FirebaseUser mUser;
     DatabaseReference adminDB;
     ArrayList<Trigger> adminTriggerList;
+    ArrayList<String> categoryList;
     Button addTriggerButton;
     TriggerAdapter mAdapter;
+    CheckBox mCheckBox1;
+    CheckBox mCheckBox2;
+    CheckBox mCheckBox3;
+    CheckBox mCheckBox4;
+    CheckBox mCheckBox5;
+    CheckBox mCheckBox6;
 
 
     @Override
@@ -46,10 +51,29 @@ public class AdminPanelActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mUser = mFirebaseAuth.getCurrentUser();
         adminDB = FirebaseDatabase.getInstance().getReference("admin");
-        addTriggerButton = (Button) findViewById(R.id.addTriggerButton);
+        addTriggerButton = findViewById(R.id.addTriggerButton);
 
-        mTriggerListView = (ListView) findViewById(R.id.triggerListView);
-        mTriggerAddEdittext = (EditText) findViewById(R.id.triggerAddEdittext);
+        final ArrayList<CheckBox> cbs = new ArrayList<>();
+
+        mCheckBox1 = findViewById(R.id.checkBox);
+        mCheckBox2 = findViewById(R.id.checkBox2);
+        mCheckBox3 = findViewById(R.id.checkBox3);
+        mCheckBox4 = findViewById(R.id.checkBox4);
+        mCheckBox5 = findViewById(R.id.checkBox5);
+        mCheckBox6 = findViewById(R.id.checkBox6);
+
+        cbs.add(mCheckBox1);
+        cbs.add(mCheckBox2);
+        cbs.add(mCheckBox3);
+        cbs.add(mCheckBox4);
+        cbs.add(mCheckBox5);
+        cbs.add(mCheckBox6);
+
+        final ArrayList<String> theList = new ArrayList<>();
+        theList.add("Category 1");
+
+        mTriggerListView = findViewById(R.id.triggerListView);
+        mTriggerAddEdittext = findViewById(R.id.triggerAddEdittext);
 
         populateAdminTriggers(new Runnable() {
             @Override
@@ -59,16 +83,20 @@ public class AdminPanelActivity extends AppCompatActivity {
             }
         });
 
-
         addTriggerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ArrayList<String> catList = new ArrayList<>();
+                for (CheckBox cb : cbs) {
+                    if (cb.isChecked()) {
+                        catList.add(cb.getText().toString());
+                    }
+                }
+                Log.d("PLURRR", catList.toString());
                 String newTriggerTitle = mTriggerAddEdittext.getText().toString();
-                Date date = new Date();
-                Long timeInMilli = date.getTime();
-                String id = timeInMilli.toString();
-                Trigger trigger = new Trigger(newTriggerTitle, id, 0, 0, null);
-                adminDB.child("triggerList").child(newTriggerTitle).setValue(trigger);
+                String id = adminDB.push().getKey();
+                Trigger trigger = new Trigger(newTriggerTitle, catList, id);
+                adminDB.child("triggerList").child(id).setValue(trigger);
 
                 adminTriggerList.add(trigger);
                 mAdapter.notifyDataSetChanged();
@@ -79,7 +107,6 @@ public class AdminPanelActivity extends AppCompatActivity {
     private void populateAdminTriggers(final Runnable runnable) {
         adminTriggerList = new ArrayList<>();
 
-
         adminDB.child("triggerList").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -87,10 +114,10 @@ public class AdminPanelActivity extends AppCompatActivity {
                 for (DataSnapshot triggerSnapshot : dataSnapshot.getChildren()) {
 
                     String name = String.valueOf(triggerSnapshot.child("triggerName").getValue());
-                    Trigger trigger = new Trigger();
+                    String id = String.valueOf(triggerSnapshot.child("id").getValue());
+                    ArrayList<String> testCatList = new ArrayList<>();
+                    Trigger trigger = new Trigger(name, testCatList, id);
                     trigger.setTriggerName(name);
-                    trigger.setTriggerVotesTotal(0);
-                    trigger.setTriggerVotesYes(0);
                     adminTriggerList.add(trigger);
                 }
                 runnable.run();
@@ -100,7 +127,6 @@ public class AdminPanelActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-
         });
     }
 }
