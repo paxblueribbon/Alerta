@@ -9,19 +9,22 @@
 
     <Button
         android:id="@+id/addTriggerButton"
-        android:layout_width="0dp"
-        android:layout_height="47dp"
+        android:layout_width="65dp"
+        android:layout_height="48dp"
         android:layout_alignBaseline="@+id/movieTitle"
         android:layout_alignBottom="@+id/movieTitle"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="25dp"
-        android:layout_marginRight="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:background="@android:drawable/ic_input_add"
+        app:layout_constraintBottom_toTopOf="@+id/triggerListView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/triggerAddEdittext"
+        app:layout_constraintVertical_bias="0.356"
+        android:layout_marginRight="16dp"/>
 
     <EditText
         android:id="@+id/triggerAddEdittext"
@@ -29,29 +32,114 @@
         android:layout_height="42dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
-        android:hint="New Trigger Name"
-        app:layout_constraintHorizontal_bias="0.615"
+        android:hint="@string/new_trigger_name"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="3"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/addTriggerButton"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="8dp"/>
 
     <ListView
         android:id="@+id/triggerListView"
-        android:layout_width="match_parent"
-        android:layout_height="230dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="368dp"
+        android:layout_height="232dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="14dp"
-        app:layout_constraintHorizontal_bias="0.571"
+        android:layout_marginTop="52dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/checkboxLayout"/>
+
+    <RelativeLayout
+        android:id="@+id/checkboxLayout"
+        android:layout_width="248dp"
+        android:layout_height="158dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/triggerListView"
+        app:layout_constraintEnd_toStartOf="@+id/addTriggerButton"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/triggerAddEdittext"
-        />
+        android:layout_marginRight="8dp">
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="46dp"
+            android:layout_marginStart="46dp"
+            android:layout_marginTop="13dp"
+            android:text="@string/category_1"
+            app:layout_constraintEnd_toStartOf="@+id/checkBox4"
+            app:layout_constraintHorizontal_bias="0.694"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <CheckBox
+            android:id="@+id/checkBox3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/checkBox6"
+            android:layout_alignBottom="@+id/checkBox6"
+            android:layout_alignLeft="@+id/checkBox2"
+            android:layout_alignStart="@+id/checkBox2"
+            android:text="@string/category_3"
+            app:layout_constraintEnd_toStartOf="@+id/checkBox6"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkBox2"
+            app:layout_constraintVertical_bias="0.0"/>
+
+        <CheckBox
+            android:id="@+id/checkBox5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/checkBox2"
+            android:layout_toEndOf="@+id/checkBox2"
+            android:layout_toRightOf="@+id/checkBox2"
+            android:text="@string/category_5"
+            tools:layout_editor_absoluteX="198dp"
+            tools:layout_editor_absoluteY="130dp"/>
+
+        <CheckBox
+            android:id="@+id/checkBox2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/checkBox"
+            android:layout_alignStart="@+id/checkBox"
+            android:layout_below="@+id/checkBox"
+            android:text="@string/category_2"
+            app:layout_constraintEnd_toStartOf="@+id/checkBox5"
+            app:layout_constraintHorizontal_bias="0.71"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkBox"/>
+
+        <CheckBox
+            android:id="@+id/checkBox4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/checkBox2"
+            android:layout_toEndOf="@+id/checkBox3"
+            android:layout_toRightOf="@+id/checkBox3"
+            android:text="@string/category_4"/>
+
+        <CheckBox
+            android:id="@+id/checkBox6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/checkBox5"
+            android:layout_toEndOf="@+id/checkBox3"
+            android:layout_toRightOf="@+id/checkBox3"
+            android:text="@string/category_6"
+            app:layout_constraintTop_toBottomOf="@+id/checkBox5"
+            tools:layout_editor_absoluteX="200dp"/>
+
+    </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

@@ -63,7 +63,7 @@ public class TriggerAdapter extends BaseAdapter {
         mTitle = movie.getTitle();
         mYear = movie.getYear();
         mPosterURL = movie.getPosterURL();
-    };
+    }
 
     public TriggerAdapter(Context context, List<Trigger> triggerList) {
         mContext = context;
@@ -98,12 +98,9 @@ public class TriggerAdapter extends BaseAdapter {
         adminDB = FirebaseDatabase.getInstance().getReference("admin");
 
         final String mUserId = user.getUid();
-        Trigger trigger = mTriggers.get(i);
-
-//        triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName());
+        final Trigger trigger = mTriggers.get(i);
 
         if (view == null) {
-//            triggerDB = movieDB.child(mImdbID).child("Triggers").child(trigger.getTriggerName());
             view = LayoutInflater.from(mContext).inflate(R.layout.trigger_list_item, null);
 
             holder = new ViewHolder();
@@ -121,16 +118,14 @@ public class TriggerAdapter extends BaseAdapter {
         holder.triggerName.setText(trigger.getTriggerName());
 
         if (mContext instanceof AdminPanelActivity) {
-//            holder.upButton.setVisibility(View.INVISIBLE);
             holder.upButton.setBackgroundResource(R.drawable.icons8edit);
-//            holder.upButton.setImageDrawable(R.drawable.icons8edit);
-//            holder.upButton.setBackground();
             holder.downButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View view) {
                     Trigger trigger1 = mTriggers.get(i);
-                    adminDB.child("triggerList").child(trigger1.getTriggerName()).removeValue();
+                    String key = trigger.getId();
+                    adminDB.child("triggerList").child(key).removeValue();
                     int i = mTriggers.indexOf(trigger1);
                     mTriggers.remove(i);
                     TriggerAdapter.this.notifyDataSetChanged();
@@ -144,12 +139,6 @@ public class TriggerAdapter extends BaseAdapter {
             triggerDB.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Trigger trigger;
-                    trigger = dataSnapshot.getValue(Trigger.class);
-                    holder.total.setText(String.valueOf(trigger.getTriggerVotesTotal()));
-                    holder.upButton.setCount(trigger.getTriggerVotesYes());
-                    int downBoats = (trigger.getTriggerVotesTotal() - trigger.getTriggerVotesYes());
-                    holder.downButton.setCount(downBoats);
                 }
 
                 @Override
@@ -170,10 +159,10 @@ public class TriggerAdapter extends BaseAdapter {
                                 holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent, null));
 
                             }
-                            else {
-                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
-                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
-                            }
+//                            else {
+//                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
+//                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
+//                            }
 
                             neitherButtonIsSelected(holder, i, mUserId);
                         }
@@ -184,10 +173,10 @@ public class TriggerAdapter extends BaseAdapter {
                                 holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent, null));
 
                             }
-                            else {
-                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.votebuttons));
-                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
-                            }
+//                            else {
+//                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.votebuttons));
+//                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
+//                            }
                             upButtonIsSelected(holder, i, mUserId);
                         }
                         if (userVote == -1) {
@@ -197,10 +186,10 @@ public class TriggerAdapter extends BaseAdapter {
                                 holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.votebuttons, null));
 
                             }
-                            else {
-                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
-                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.votebuttons));
-                            }
+//                            else {
+//                                holder.upButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.colorAccent));
+//                                holder.downButton.setBackgroundTintList(mContext.getResources().getColorStateList(R.color.votebuttons));
+//                            }
                             downButtonIsSelected(holder, i, mUserId);
                         }
                     }
@@ -209,8 +198,6 @@ public class TriggerAdapter extends BaseAdapter {
                         userDB.child(mUserId).child("changes").child(mImdbID).child("triggers").child(trigger1.getTriggerName()).setValue(0);
                         Movie movie = new Movie(mImdbID, mTitle);
                         userDB.child(mUserId).child("changes").child(mImdbID).child("details").setValue(movie);
-
-
                     }
 
                 }
@@ -220,21 +207,18 @@ public class TriggerAdapter extends BaseAdapter {
 
                 }
             });
-
         }
         return view;
     }
 
     private static class ViewHolder {
         TextView triggerName;
-        CounterFab upButton;
-        CounterFab downButton;
+        Button upButton;
+        Button downButton;
         TextView total;
     }
     private void neitherButtonIsSelected(final ViewHolder holder, final int i, final String mUserId) {
         final DatabaseReference movieDB = FirebaseDatabase.getInstance().getReference("movies");
-
-
 
         holder.upButton.setOnClickListener(new View.OnClickListener() {
             Trigger trigger1 = mTriggers.get(i);
