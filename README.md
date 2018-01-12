@@ -7,3 +7,8 @@ known issues:
 - imdb page doesn't have 250 movies, only top 10.
 - imdb top 250 doesn't format apostrophes correctly
 - triggers/categories are generic, this is to avoid having to read difficult things repeatedly while programming the app.
+
+
+needed features:
+
+- expand movie poster to fullscreen on click
