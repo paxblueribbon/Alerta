@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundPrimary"
+    android:background="@color/colorPrimaryDark"
     tools:context="me.paxana.cwnet.ui.MovieActivity">
 
     <me.zhanghai.android.materialratingbar.MaterialRatingBar
@@ -16,33 +16,34 @@
         android:layout_marginBottom="12dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
         android:numStars="10"
-        app:layout_constraintBottom_toTopOf="@+id/summaryTextView"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/yearTextView"
-        app:layout_constraintTop_toBottomOf="@+id/titleTextView"/>
+        app:layout_constraintTop_toBottomOf="@+id/titleTextView"
+        />
 
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="252dp"
         android:layout_height="111dp"
-        android:layout_above="@+id/summaryTextView"
+        android:layout_above="@+id/scrollView2"
         android:layout_below="@+id/yearTextView"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
+        android:layout_toEndOf="@+id/posterImageView"
         android:layout_toRightOf="@+id/posterImageView"
         android:gravity="center_vertical|fill_horizontal"
         android:textAlignment="center"
         android:textColor="@color/textPrimary"
         android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/yearTextView"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toRightOf="@+id/posterImageView"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Blade Runner RETURN OF THE UNNECESSARILY LONG TITLE"
-        android:layout_toEndOf="@+id/posterImageView"/>
+        tools:text="Blade Runner RETURN OF THE UNNECESSARILY LONG TITLE"/>
 
     <ImageView
         android:id="@+id/posterImageView"
@@ -55,12 +56,12 @@
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:contentDescription="@string/movie_poster"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toTopOf="@+id/summaryTextView"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/br_poster"
-        android:contentDescription="@string/movie_poster"/>
+        tools:srcCompat="@drawable/br_poster"/>
 
     <TextView
         android:id="@+id/yearTextView"
@@ -69,6 +70,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:textColor="@color/textSecondary"
@@ -78,8 +80,7 @@
         app:layout_constraintStart_toEndOf="@+id/posterImageView"
         app:layout_constraintTop_toBottomOf="@+id/titleTextView"
         app:layout_constraintVertical_bias="0.21"
-        tools:text="1982"
-        android:layout_marginLeft="8dp"/>
+        tools:text="1982"/>
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
@@ -110,10 +111,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="52dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="52dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/no_reviews"
         android:textAlignment="center"
         android:textSize="14sp"
@@ -122,17 +121,19 @@
         app:layout_constraintHorizontal_bias="0.133"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/triggerListView"
-        app:layout_constraintVertical_bias="0.0"/>
+        app:layout_constraintVertical_bias="0.646"
+        android:layout_marginRight="52dp"
+        android:layout_marginLeft="8dp"/>
 
     <Button
         android:id="@+id/signUpButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="116dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/sign_in_sign_up_now"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -160,17 +161,15 @@
         android:id="@+id/scrollView2"
         android:layout_width="366dp"
         android:layout_height="81dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/plzConsiderTextView"
+        app:layout_constraintBottom_toTopOf="@+id/triggerListView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/materialRatingBar"
-        app:layout_constraintVertical_bias="0.0"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="12dp">
+        app:layout_constraintTop_toBottomOf="@+id/materialRatingBar">
 
         <TextView
             android:id="@+id/summaryTextView"

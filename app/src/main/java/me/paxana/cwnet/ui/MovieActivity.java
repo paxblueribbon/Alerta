@@ -2,8 +2,11 @@ package me.paxana.cwnet.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -132,6 +136,18 @@ public class MovieActivity extends AppCompatActivity {
         userDB = FirebaseDatabase.getInstance().getReference("users");
         adminDB = FirebaseDatabase.getInstance().getReference("admin");
 
+        //stylize the action bar
+        TextView tv = new TextView(getApplicationContext());
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
+        tv.setLayoutParams(lp);
+        tv.setText(R.string.Title);
+        tv.setTextSize(50);
+        tv.setTextColor(Color.parseColor("#FFFFFF"));
+        Typeface tf = Typeface.createFromAsset(getAssets(), "KGALittleSwag.ttf");
+        tv.setTypeface(tf);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setCustomView(tv);
 
         Intent intent = getIntent();
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

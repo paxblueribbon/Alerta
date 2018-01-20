@@ -44,6 +44,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
@@ -53,6 +54,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.paxana.cwnet.Adapters.SearchAdapter;
 import me.paxana.cwnet.Model.Movie;
@@ -76,13 +79,10 @@ public class MainActivity extends AppCompatActivity {
     private Menu mMenu;
     private RelativeLayout mLoaderLayout;
     DatabaseReference adminDB;
-    final int RC_SIGN_IN = 1312;
-    CallbackManager callbackManager = CallbackManager.Factory.create();
-
 
     FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
-    FirebaseUser mUser = mFirebaseAuth.getCurrentUser();
 
+    FirebaseUser mUser = mFirebaseAuth.getCurrentUser();
     String mUserName;
 
     @Override
@@ -96,20 +96,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
 
         //stylize the action bar
         TextView tv = new TextView(getApplicationContext());
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT);
         tv.setLayoutParams(lp);
         tv.setText(R.string.Title);
-                tv.setTextSize(50);
+        tv.setTextSize(50);
         tv.setTextColor(Color.parseColor("#FFFFFF"));
         Typeface tf = Typeface.createFromAsset(getAssets(), "KGALittleSwag.ttf");
         tv.setTypeface(tf);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(tv);
+
 
         updateOptionsMenu();
         MobileAds.initialize(this, "ca-app-pub-7338499199160030~7379357533");
@@ -125,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
         mMovieTitle.setVisibility(View.INVISIBLE);
         mListView = findViewById(R.id.resultsList);
         SliderLayout sliderShow = findViewById(R.id.slider);
+
+        adminDB = FirebaseDatabase.getInstance().getReference("admin");
 
         TextSliderView textSliderView = new TextSliderView(this);
         TextSliderView textSliderView2 = new TextSliderView(this);
@@ -221,19 +222,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void getResults(String searchParam) throws JSONException {
         String apiKey = "face7189";
-        String theURL = "http://www.omdbapi.com/?s=" + searchParam + "&apikey=" + apiKey;
+        String theURL = "http://www.omdbapi.com/?s=" + searchParam + "&apikey=" + apiKey + "&type=movie";
         final OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(theURL).build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                final String jsonData = response.body().string();
+                final String jsonData = String.valueOf(response.body());
 
                 JSONObject results;
 
@@ -272,7 +273,6 @@ public class MainActivity extends AppCompatActivity {
                                             intent.putExtra("YEAR_KEY", searchResults[i].getYear());
                                             intent.putExtra("POSTER_KEY", searchResults[i].getPosterURL());
                                             startActivity(intent);
-
                                         }
                                     });
                                     mLoaderLayout.setVisibility(View.INVISIBLE);
@@ -301,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         updateOptionsMenu();
-        toggleMenuLogState(menu);
+//        toggleMenuLogState(menu);
         return true;
     }
 
@@ -312,14 +312,12 @@ public class MainActivity extends AppCompatActivity {
         if (mUser != null) {
             mUserName = mUser.getDisplayName();
         }
-        int userPermissions = findIfAdmin(mUser);
 
         getMenuInflater().inflate(R.menu.menu, menu);
         MenuItem logOut = menu.findItem(R.id.logOut);
         MenuItem signUp = menu.findItem(R.id.signUp);
         MenuItem profile = menu.findItem(R.id.profile);
         MenuItem searchButton = menu.findItem(R.id.optionsSearchButton);
-        MenuItem adminPanel = menu.findItem(R.id.adminPanelMenu);
 
         FirebaseUser user = mFirebaseAuth.getCurrentUser();
 
@@ -335,14 +333,11 @@ public class MainActivity extends AppCompatActivity {
                 profile.setTitle(firstName);
             }
             profile.setVisible(true);
-            if (userPermissions > 0)
-            adminPanel.setVisible(true);
         }
         else {
             logOut.setVisible(false);
             signUp.setVisible(true);
             profile.setVisible(false);
-            adminPanel.setVisible(false);
         }
     }
 
@@ -373,10 +368,6 @@ public class MainActivity extends AppCompatActivity {
                 animate();
                 mMovieTitle.requestFocus();
                 break;
-            case R.id.adminPanelMenu:
-                Intent adminPanelIntent = new Intent(this, AdminPanelActivity.class);
-                startActivity(adminPanelIntent);
-                break;
 
         }
         return super.onOptionsItemSelected(item);
@@ -388,35 +379,5 @@ public class MainActivity extends AppCompatActivity {
             onPrepareOptionsMenu(mMenu);
         }
     }
-//TODO: Fix admin check system
-    private int findIfAdmin(FirebaseUser user){
-        final int[] permissions = new int[1];
-        if (mFirebaseAuth.getCurrentUser() != null) {
-            final String uuid = user.getUid();
 
-            adminDB = FirebaseDatabase.getInstance().getReference("admin");
-
-            DatabaseReference userAdmins = adminDB.child("adminUsers");
-
-            userAdmins.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.hasChild(uuid)) {
-                        permissions[0] = (dataSnapshot.child(uuid).getValue(Integer.class));
-                        Toast.makeText(getApplicationContext(), "User is admin", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        permissions[0] = 0;
-                        Toast.makeText(getApplicationContext(), "User is not admin", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-        }
-        return permissions[0];
     }
-}

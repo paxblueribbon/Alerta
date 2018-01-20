@@ -63,5 +63,6 @@
     <string name="anon_login">Use Alerta Anonymously</string>
     <string name="use_alerta_non_anon">Using Alerta With An Account Will Require Phone, Facebook, or Google+ Verification, But Will Enable All Services Including Voting</string>
     <string name="use_alerta_anon">Using Alerta Anonymously Doesn\'t Require Any Verification, Allows You To View Any Movies But Not Contribute To The Project By Voting</string>
+    <string name="donate_to_the_developer">Donate To The Developer</string>
 
 </resources>
