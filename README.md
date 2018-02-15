@@ -1,6 +1,7 @@
 known issues:
 
 - icons in welcome message are absurd
+
 ~~anyone can access admin panel~~
 - ui is ugly/confusing
 ~~top movies in theaters don't go to anything / needs api~~
